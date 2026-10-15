@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Dot by Vivek Chavan</title>
+<link rel="manifest" href="manifest.json">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Sora:wght@600;700&family=Plus+Jakarta+Sans:wght@400;500;600&display=swap">
+<meta name="theme-color" content="#0f766e">
+<style>
+:root{--bg:#f2f3fb;--glass:#ffffffcc;--surface:#fff;--ink:#16182c;--mute:#667091;--line:#e0e3f1;--accent:#5b4bdb;--accent-ink:#fff;--me:#5b4bdb;--me-ink:#fff;--orb:radial-gradient(circle at 30% 25%,#a99bff,#5b4bdb 55%,#2c20a3);--glow:#5b4bdb55;--ok:#12a594}
+@media(prefers-color-scheme:dark){:root{--bg:#0e1022;--glass:#151833cc;--surface:#171a38;--ink:#e9ebfa;--mute:#98a0c8;--line:#262a52;--accent:#8f82ff;--accent-ink:#0e1022;--me:#2b2870;--me-ink:#f2f1ff;--orb:radial-gradient(circle at 30% 25%,#c4bbff,#7c6cff 55%,#3a2fb5);--glow:#7c6cff66;--ok:#34d3bf}}
+*{box-sizing:border-box}
+html,body{height:100%;margin:0}
+body{background:var(--bg) radial-gradient(60rem 28rem at 50% -8%,var(--glow),transparent 70%) no-repeat;color:var(--ink);font:16px/1.6 "Plus Jakarta Sans",system-ui,sans-serif;display:flex;flex-direction:column;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+header{display:flex;align-items:center;gap:14px;padding:10px 16px;background:var(--glass);-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);border-bottom:1px solid var(--line)}
+#who{display:flex;flex-direction:column;align-items:center;gap:4px;flex:none}
+#who small{font-size:.66rem;color:var(--mute);line-height:1}
+#dot{position:relative;width:52px;height:52px;border-radius:50%;background:var(--orb);color:#fff;display:grid;place-items:center;font:700 13px/1 Sora,"Trebuchet MS",sans-serif;box-shadow:0 4px 18px var(--glow)}
+#dot::after{content:"";position:absolute;inset:-4px;border-radius:50%;border:2px solid var(--accent);opacity:0}
+#dot.busy::after{animation:ring 1.2s ease-out infinite}
+.ttl{flex:1;min-width:0}
+.ttl h1{font:700 1.15rem/1.2 Sora,sans-serif;margin:0}
+#status{display:flex;gap:6px;flex-wrap:wrap;margin-top:3px}
+.pill{display:inline-flex;align-items:center;gap:5px;font-size:.7rem;color:var(--mute);border:1px solid var(--line);border-radius:99px;padding:0 8px;background:var(--surface)}
+.pill i{width:6px;height:6px;border-radius:50%;background:var(--ok)}
+.pill.off i{background:#e5484d}
+button{font:inherit;cursor:pointer}
+.ghost{background:var(--surface);border:1px solid var(--line);color:var(--ink);border-radius:99px;padding:6px 14px;font-size:.88rem}
+.ghost:hover{border-color:var(--accent)}
+#log{flex:1;overflow-y:auto;padding:20px 16px 8px;display:flex;flex-direction:column;gap:16px;width:100%;max-width:52rem;margin:0 auto;scroll-behavior:smooth}
+.m{position:relative;padding:2px 0 2px 36px;max-width:100%;white-space:pre-wrap;word-wrap:break-word;animation:in .25s ease-out}
+.m.a::before{content:"";position:absolute;left:0;top:3px;width:24px;height:24px;border-radius:50%;background:var(--orb);box-shadow:0 2px 8px var(--glow)}
+.m.u{align-self:flex-end;max-width:85%;background:var(--me);color:var(--me-ink);padding:9px 15px;border-radius:20px 20px 6px 20px}
+.m.s{align-self:center;font-size:.8rem;color:var(--mute);padding:3px 12px;border:1px dashed var(--line);border-radius:99px}
+.m code{font:.85em ui-monospace,Menlo,Consolas,monospace;background:var(--line);padding:1px 6px;border-radius:6px}
+.m pre{background:#0b0d1f;color:#e4e6ff;padding:12px 14px;border-radius:12px;overflow-x:auto;margin:8px 0;white-space:pre}
+.m pre code{background:none;padding:0;color:inherit}
+.typing span{display:inline-block;width:7px;height:7px;margin:8px 4px 0 0;border-radius:50%;background:var(--accent);animation:bounce 1s ease-in-out infinite}
+.typing span:nth-child(2){animation-delay:.15s}.typing span:nth-child(3){animation-delay:.3s}
+#hero{margin:auto;text-align:center;max-width:34rem;padding:2rem 0}
+.orb{width:116px;height:116px;border-radius:50%;background:var(--orb);color:#fff;display:grid;place-items:center;margin:0 auto 22px;font:700 24px Sora,sans-serif;box-shadow:0 12px 50px var(--glow);animation:float 5s ease-in-out infinite}
+#hero h2{font:700 1.7rem/1.2 Sora,sans-serif;margin:0 0 8px}
+#hero p{color:var(--mute);margin:0 0 22px}
+.chips{display:flex;flex-wrap:wrap;gap:8px;justify-content:center}
+.chip{background:var(--surface);color:var(--ink);border:1px solid var(--line);border-radius:14px;padding:9px 14px;font-size:.88rem;text-align:left}
+.chip:hover{border-color:var(--accent)}
+form{display:flex;align-items:flex-end;gap:8px;margin:8px auto 14px;width:min(52rem,calc(100% - 24px));padding:8px 8px 8px 18px;background:var(--surface);border:1px solid var(--line);border-radius:26px;box-shadow:0 10px 40px -12px var(--glow)}
+textarea{flex:1;resize:none;font:inherit;color:var(--ink);background:none;border:0;outline:0;padding:8px 0;max-height:160px}
+#send{width:40px;height:40px;border-radius:50%;border:0;background:var(--accent);color:var(--accent-ink);display:grid;place-items:center;flex:none}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+dialog{width:min(40rem,94vw);max-height:90vh;border:1px solid var(--line);border-radius:22px;background:var(--surface);color:var(--ink);padding:20px;overflow:auto;box-shadow:0 30px 80px -20px #000a}
+dialog::backdrop{background:#0a0c1a99;-webkit-backdrop-filter:blur(4px);backdrop-filter:blur(4px)}
+dialog h2{font:700 1.2rem Sora,sans-serif}
+fieldset{border:1px solid var(--line);border-radius:14px;margin:0 0 12px;padding:10px 14px 14px}
+legend{padding:0 6px;color:var(--mute);font-size:.82rem}
+label{display:block;font-size:.82rem;color:var(--mute);margin-top:8px}
+input[type=text],input[type=password]{width:100%;font:inherit;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:12px;padding:9px 12px}
+.row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+#facts div{display:flex;gap:8px;justify-content:space-between;align-items:center;padding:6px 0;border-bottom:1px solid var(--line);font-size:.9rem}
+.tabs{display:flex;gap:8px;margin:14px 0}.tabs .on{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+.tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(7rem,1fr));gap:8px;margin-bottom:14px}
+.tile{background:var(--bg);border:1px solid var(--line);border-radius:14px;padding:10px 12px;display:flex;flex-direction:column}
+.tile b{font:700 1.6rem/1.1 Sora,sans-serif}.tile span{font-size:.75rem;color:var(--mute)}
+.perm{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--line);margin:0;color:var(--ink);font-size:1rem}
+.perm small{display:block;color:var(--mute);font-size:.8rem}
+.perm input{width:44px;height:24px;-webkit-appearance:none;appearance:none;border-radius:99px;background:var(--line);position:relative;flex:none;cursor:pointer;transition:background .2s}
+.perm input::after{content:"";position:absolute;top:3px;left:3px;width:18px;height:18px;border-radius:50%;background:#fff;transition:transform .2s}
+.perm input:checked{background:var(--accent)}.perm input:checked::after{transform:translateX(20px)}
+#adlg h3{font:600 .9rem Sora,sans-serif;margin:18px 0 6px}
+.li{display:flex;justify-content:space-between;gap:10px;padding:6px 0;border-bottom:1px solid var(--line);font-size:.9rem}
+.li small,.mut{color:var(--mute)}.li span{min-width:0;word-break:break-word}
+.k{font-style:normal;font-size:.68rem;text-transform:uppercase;letter-spacing:.04em;padding:1px 7px;border-radius:99px;background:var(--line);margin-right:6px}
+#mic{width:40px;height:40px;border-radius:50%;border:1px solid var(--line);background:none;color:var(--mute);display:grid;place-items:center;flex:none}
+#mic.on{color:var(--accent-ink);background:var(--accent);border-color:var(--accent);animation:listen 1.6s ease-in-out infinite}
+@keyframes listen{50%{box-shadow:0 0 0 8px transparent;box-shadow:0 0 0 8px var(--glow)}}
+header .ghost{padding:6px 11px;font-size:.82rem}
+#pal{position:fixed;z-index:5;width:68px;height:68px;touch-action:none;cursor:grab;user-select:none;-webkit-user-select:none;filter:drop-shadow(0 8px 10px #0004)}
+#pal[hidden]{display:none}
+#pal.drag{cursor:grabbing;filter:drop-shadow(0 14px 16px #0005)}
+#pal svg{width:100%;height:100%;display:block;pointer-events:none;animation:bob 3.2s ease-in-out infinite}
+#pal .eyes{transform-box:fill-box;transform-origin:center;animation:blink 5s infinite}
+#pal.busy svg{animation:wiggle .5s ease-in-out infinite}
+#pal.listen{filter:drop-shadow(0 0 14px var(--accent))}
+@keyframes bob{50%{transform:translateY(-4px)}}
+@keyframes blink{0%,93%,100%{transform:scaleY(1)}96%{transform:scaleY(.1)}}
+@keyframes wiggle{25%{transform:rotate(-6deg)}75%{transform:rotate(6deg)}}
+form{position:relative;padding-left:8px}
+textarea{padding-left:4px}
+#plus{width:40px;height:40px;border-radius:50%;border:1px solid var(--line);background:none;color:var(--ink);display:grid;place-items:center;flex:none}
+#plus:hover{border-color:var(--accent)}
+#menu{position:absolute;bottom:calc(100% + 8px);left:0;background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:6px;min-width:12.5rem;box-shadow:0 16px 40px -12px var(--glow);z-index:6}
+#menu[hidden]{display:none}
+#menu button{display:flex;align-items:center;gap:10px;width:100%;background:none;border:0;color:var(--ink);padding:10px 12px;border-radius:10px;text-align:left}
+#menu button:hover{background:var(--bg)}
+#chips{display:flex;gap:6px;flex-wrap:wrap;width:min(52rem,calc(100% - 24px));margin:0 auto}
+.attf{display:inline-flex;align-items:center;gap:4px;background:var(--surface);border:1px solid var(--line);border-radius:99px;padding:2px 4px 2px 12px;font-size:.82rem}
+.attf button{border:0;background:none;color:var(--mute);width:22px;height:22px;font-size:1rem}
+.cc{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--line)}
+.cc small{display:block;color:var(--mute);font-size:.8rem}
+.cc .row{flex:none}
+@keyframes in{from{opacity:0;transform:translateY(6px)}}
+@keyframes ring{from{transform:scale(.9);opacity:.8}to{transform:scale(1.3);opacity:0}}
+@keyframes bounce{50%{transform:translateY(-5px);opacity:.5}}
+@keyframes float{50%{transform:translateY(-8px)}}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;scroll-behavior:auto!important}}
+</style>
+</head>
+<body>
+<header>
+  <div id="who"><div id="dot" role="img" aria-label="Vivek">Vivek</div><small>Vivek Chavan</small></div>
+  <div class="ttl"><h1>Dot</h1><div id="status"></div></div>
+  <button class="ghost" id="install" hidden>Install app</button>
+  <button class="ghost" id="acc">Access</button>
+  <button class="ghost" id="histbtn">History</button>
+  <button class="ghost" id="open">Settings</button>
+</header>
+<div id="log" aria-live="polite"></div>
+<div id="chips"></div>
+<form id="f">
+  <button type="button" id="plus" aria-label="Add file or connector" aria-haspopup="menu" aria-expanded="false"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></button>
+  <div id="menu" role="menu" hidden>
+    <button type="button" role="menuitem" id="m-file"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.5 12.5 21a5.5 5.5 0 0 1-8-8l9-9a3.7 3.7 0 0 1 5.2 5.2l-9 9a1.8 1.8 0 0 1-2.6-2.6l8.3-8.3"/></svg>Upload file</button>
+    <button type="button" role="menuitem" id="m-conn"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 2v6M15 2v6M6 8h12v4a6 6 0 0 1-12 0zM12 18v4"/></svg>Connectors</button>
+  </div>
+  <input type="file" id="file" hidden>
+  <textarea id="t" rows="1" placeholder="Message your dot" aria-label="Message"></textarea>
+  <button type="button" id="mic" aria-label="Hey Dot voice mode" aria-pressed="false"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="3" width="6" height="12" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg></button>
+  <button id="send" aria-label="Send"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5M5 12l7-7 7 7"/></svg></button>
+</form>
+
+<dialog id="dlg">
+  <h2 style="margin-top:0">Settings</h2>
+  <fieldset><legend>AI providers (tried in this order; next one is used if one fails)</legend>
+    <label>Gemini API key (free tier)</label><input type="password" id="k-gemini" autocomplete="off">
+    <label>Gemini model</label><input type="text" id="m-gemini">
+    <label>Groq API key (free tier)</label><input type="password" id="k-groq" autocomplete="off">
+    <label>Groq model</label><input type="text" id="m-groq">
+    <label>Claude API key (paid, optional)</label><input type="password" id="k-claude" autocomplete="off">
+    <label>Claude model</label><input type="text" id="m-claude">
+    <label>Provider order (comma separated)</label><input type="text" id="order">
+  </fieldset>
+  <fieldset><legend>System bridge (optional, runs companion.js on your device)</legend>
+    <label>Bridge URL</label><input type="text" id="b-url">
+    <label>Bridge token (printed by companion.js)</label><input type="password" id="b-token" autocomplete="off">
+  </fieldset>
+  <fieldset><legend>Cloud worker (background tasks, web, app connectors)</legend>
+    <label>Worker URL</label><input type="text" id="c-url" placeholder="https://dot.yourname.workers.dev">
+    <label>Worker token</label><input type="password" id="c-token" autocomplete="off">
+  </fieldset>
+  <fieldset><legend>Companion character</legend>
+    <label class="row" style="color:var(--ink);font-size:1rem"><input type="checkbox" id="pal-on"> Show the floating companion</label>
+    <label>Drag it anywhere. Tap it to switch between three characters. On a keyboard, focus it and use the arrow keys.</label>
+  </fieldset>
+  <fieldset><legend>Long-term memory</legend>
+    <div id="facts"></div>
+    <div class="row" style="margin-top:10px"><input type="text" id="newfact" placeholder="Add a fact to remember"><button class="ghost" id="addfact" type="button">Add</button></div>
+  </fieldset>
+  <div class="row">
+    <button class="ghost" id="save" type="button">Save</button>
+    <button class="ghost" id="export" type="button">Export memory</button>
+    <button class="ghost" id="clear" type="button">Clear chat</button>
+    <button class="ghost" id="close" type="button">Close</button>
+  </div>
+  <p style="color:var(--mute);font-size:.8rem">Keys and memory stay in this browser only. Shell and file actions always ask you first.</p>
+</dialog>
+
+<dialog id="adlg">
+  <div class="row" style="justify-content:space-between"><h2 style="margin:0">Access</h2><button class="ghost" id="aclose" type="button">Close</button></div>
+  <div id="pane-p" style="margin-top:14px"></div>
+</dialog>
+
+<dialog id="hdlg">
+  <div class="row" style="justify-content:space-between"><h2 style="margin:0">History</h2><button class="ghost" id="hclose" type="button">Close</button></div>
+  <div id="pane-h" style="margin-top:14px"></div>
+</dialog>
+
+<dialog id="cdlg">
+  <div class="row" style="justify-content:space-between"><h2 style="margin:0" id="ctitle">Connectors</h2><button class="ghost" id="cclose" type="button">Close</button></div>
+  <div id="cbody" style="margin-top:14px"></div>
+</dialog>
+
+<script>
+const $=s=>document.querySelector(s);
+const LS={get:(k,d)=>{try{const v=localStorage.getItem(k);return v==null?d:JSON.parse(v)}catch{return d}},set:(k,v)=>{try{localStorage.setItem(k,JSON.stringify(v))}catch{}}};
+let cfg=LS.get('cfg',null)||{order:['gemini','groq','claude'],keys:{},models:{gemini:'gemini-2.5-flash',groq:'llama-3.3-70b-versatile',claude:'claude-sonnet-5-5'},bridge:{url:'http://localhost:8787',token:''}};
+let mem=LS.get('mem',[]), hist=LS.get('hist',[]), summary=LS.get('sum','');
+cfg.cloud=cfg.cloud||{url:'',token:''};
+cfg.mascot=Object.assign({on:true,i:0,x:null,y:null},cfg.mascot||{});
+cfg.perm=Object.assign({voice:true,web:true,apps:true,device:true,bg:true},cfg.perm||{});
+let act=LS.get('act',[]),voiceTurn=false,lastReply='';
+const logAct=(kind,target,ok=true)=>{act.push({t:Date.now(),kind,target:String(target).slice(0,120),ok});act=act.slice(-200);LS.set('act',act)};
+const CAT={shell:'device',read:'device',write:'device',ls:'device',web:'web',api:'apps',schedule:'bg',tasks:'bg',unschedule:'bg'};
+const save=()=>{LS.set('cfg',cfg);LS.set('mem',mem);LS.set('hist',hist);LS.set('sum',summary)};
+const strip=t=>t.replace(/<(remember|forget)>[\s\S]*?<\/\1>/g,'').replace(/<tool>[\s\S]*?<\/tool>/g,'').trim();
+
+const esc=t=>t.replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));
+const md=t=>esc(t).replace(/```(?:\w+)?\n?([\s\S]*?)```/g,'<pre><code>$1</code></pre>').replace(/`([^`\n]+)`/g,'<code>$1</code>').replace(/\*\*([^*\n]+)\*\*/g,'<b>$1</b>');
+function bubble(text,cls){const d=document.createElement('div');d.className='m '+cls;if(cls==='a')d.innerHTML=md(text);else d.textContent=text;$('#log').appendChild(d);const tpn=document.querySelector('#log .typing');if(tpn&&!d.contains(tpn))$('#log').appendChild(tpn.parentNode);$('#log').scrollTop=1e9;return d}
+function renderAll(){$('#log').innerHTML='';hist.forEach(m=>{if(m.role==='user'&&m.content.startsWith('[tool result]'))return;const s=m.role==='user'?(m.v||m.content):strip(m.content);if(s)bubble(s,m.role==='user'?'u':'a')});if(!hist.length)hero();updStatus()}
+function updStatus(){const on=cfg.order.filter(p=>cfg.keys[p]);const pill=(t,off)=>`<span class="pill${off?' off':''}"><i></i>${t}</span>`;$('#status').innerHTML=(on.length?on.map(p=>pill(p)).join(''):pill('Add an API key',1))+(cfg.bridge.token?pill('device'):'')+(cfg.cloud.token?pill('cloud'):'')+(listening?pill('hey dot'):'')}
+
+async function callModel(p,system,msgs){
+  const k=cfg.keys[p],m=cfg.models[p];
+  if(p==='gemini'){
+    const r=await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${m}:generateContent`,{method:'POST',headers:{'content-type':'application/json','x-goog-api-key':k},body:JSON.stringify({systemInstruction:{parts:[{text:system}]},contents:msgs.map(x=>({role:x.role==='assistant'?'model':'user',parts:[{text:x.content}]}))})});
+    const j=await r.json();if(!r.ok)throw new Error(j.error?.message||r.status);
+    return (j.candidates?.[0]?.content?.parts||[]).map(x=>x.text||'').join('');
+  }
+  if(p==='groq'){
+    const r=await fetch('https://api.groq.com/openai/v1/chat/completions',{method:'POST',headers:{'content-type':'application/json',authorization:'Bearer '+k},body:JSON.stringify({model:m,messages:[{role:'system',content:system},...msgs]})});
+    const j=await r.json();if(!r.ok)throw new Error(j.error?.message||r.status);
+    return j.choices?.[0]?.message?.content||'';
+  }
+  if(p==='claude'){
+    const r=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'content-type':'application/json','x-api-key':k,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},body:JSON.stringify({model:m,max_tokens:2048,system,messages:msgs})});
+    const j=await r.json();if(!r.ok)throw new Error(j.error?.message||r.status);
+    return (j.content||[]).map(x=>x.text||'').join('');
+  }
+}
+async function ask(system,msgs){
+  const errs=[];
+  for(const p of cfg.order){
+    if(!cfg.keys[p])continue;
+    try{return await callModel(p,system,msgs)}catch(e){errs.push(p+': '+e.message)}
+  }
+  throw new Error(errs.length?errs.join(' | '):'Add at least one API key in Settings.');
+}
+
+function sysPrompt(){
+  const tl=[];
+  if(cfg.bridge.token)tl.push("shell{cmd}, read{path}, write{path,content}, ls{path} on the user's device (the user approves shell and write)");
+  if(cfg.cloud.token)tl.push('web{url} reads a web page; api{connector,method,path,body} calls a connected app (the user approves anything but GET); schedule{prompt,every_minutes} runs a task in the background and the result appears later; tasks{}; unschedule{id}');
+  if(cfg.cloud.token&&connNames.length)tl.push('connected apps you can call with api: '+connNames.join(', '));
+  const tools=tl.length?`\nYou can use tools. To use one, end your reply with exactly one line like:\n<tool>{"name":"web","args":{"url":"https://..."}}</tool>\nTools: ${tl.join('; ')}. You will get the result and can continue. One tool per reply.`:'';
+  return `You are Dot, a personal AI assistant for ${LS.get('name','the user')}. Be warm, direct and concise. Today is ${new Date().toDateString()}.
+Long-term memory: when you learn a durable fact or preference, add <remember>short fact</remember> to your reply. To drop a fact, use <forget>text of the fact</forget>. Never store passwords or keys.
+Known facts:
+${mem.map(m=>'- '+m.text).join('\n')||'(none yet)'}
+${summary?'Earlier conversation summary:\n'+summary:''}${voiceTurn?'\nThe user spoke this aloud. Answer in 1-3 short spoken sentences with no markdown.':''}${tools}`;
+}
+
+async function bridge(name,args){
+  const r=await fetch(cfg.bridge.url.replace(/\/$/,'')+'/tool',{method:'POST',headers:{'content-type':'application/json',authorization:'Bearer '+cfg.bridge.token},body:JSON.stringify({name,args})});
+  const j=await r.json();if(!r.ok)throw new Error(j.error||r.status);return j.result;
+}
+async function runTool(call){
+  let c;try{c=JSON.parse(call)}catch{return 'Invalid tool JSON'}
+  const {name,args={}}=c;
+  const cat=CAT[name];
+  if(cat&&cfg.perm[cat]===false){logAct(cat,name+' (blocked)',false);return 'Blocked: the user turned off '+cat+' access in Access > Permissions.'}
+  if(['shell','write'].includes(name)&&!confirm('Dot wants to '+(name==='shell'?'run:\n'+args.cmd:'write file:\n'+args.path)+'\n\nAllow?'))return 'User denied this action.';
+  if(name==='api'&&(args.method||'GET')!=='GET'&&!confirm('Dot wants to call '+args.connector+' '+args.method+' '+args.path+'\n\nAllow?'))return 'User denied this action.';
+  bubble('Tool: '+name+' '+(args.cmd||args.path||''),'s');
+  const tgt=name==='web'?hostOf(args.url||''):name==='api'?(args.connector+' '+(args.method||'GET')):(args.cmd||args.path||args.prompt||name);
+  try{const r=await (CLOUD.includes(name)?cloud:bridge)(name,args);logAct(cat,tgt);return r}catch(e){logAct(cat,tgt,false);return 'Tool error: '+e.message}
+}
+
+async function turn(text,shown){
+  logAct(voiceTurn?'voice':'chat',shown||text);lastReply='';document.querySelector('#hero')?.remove();hist.push({role:'user',content:text,v:shown});bubble(shown||text,'u');save();const tp=bubble('','a');tp.innerHTML='<span class="typing"><span></span><span></span><span></span></span>';
+  $('#dot').classList.add('busy');
+  try{
+    for(let i=0;i<6;i++){
+      const out=await ask(sysPrompt(),hist.slice(-30).map(({role,content})=>({role,content})));
+      out.replace(/<remember>([\s\S]*?)<\/remember>/g,(_,f)=>{f=f.trim();if(f&&!mem.some(m=>m.text===f))mem.push({t:Date.now(),text:f});return ''});
+      out.replace(/<forget>([\s\S]*?)<\/forget>/g,(_,f)=>{f=f.trim().toLowerCase();mem=mem.filter(m=>!m.text.toLowerCase().includes(f));return ''});
+      hist.push({role:'assistant',content:out});
+      const shown=strip(out);if(shown){bubble(shown,'a');lastReply=shown}
+      const tm=out.match(/<tool>([\s\S]*?)<\/tool>/);
+      if(!tm||!(cfg.bridge.token||cfg.cloud.token)){break}
+      const res=await runTool(tm[1]);
+      hist.push({role:'user',content:'[tool result]\n'+String(res).slice(0,8000)});
+    }
+    mem=mem.slice(-300);save();syncMem();compact();
+  }catch(e){bubble(e.message,'s')}
+  tp.remove();$('#dot').classList.remove('busy');if(voiceTurn&&lastReply)speak(lastReply);voiceTurn=false;
+}
+async function compact(){
+  if(hist.length<=40)return;
+  const old=hist.slice(0,20);
+  try{
+    summary=await ask('Merge the previous summary and the conversation into one short summary (max 200 words) of what matters for future help.',[{role:'user',content:'Previous summary:\n'+summary+'\n\nConversation:\n'+old.map(m=>m.role+': '+strip(m.content)).join('\n')}]);
+    hist=hist.slice(20);save();
+  }catch{}
+}
+
+function hero(){const h=new Date().getHours(),g=h<12?'Good morning':h<18?'Good afternoon':'Good evening';const d=document.createElement('div');d.id='hero';d.innerHTML=`<div class="orb">Vivek</div><h2>${g}, Vivek</h2><p>I remember what matters, use your devices and keep working while you are away.</p><div class="chips"></div>`;['Summarize AI news for me every morning','Remember that I build AI web apps','Read a web page and summarize it','What can you do on my device?'].forEach(t=>{const b=document.createElement('button');b.className='chip';b.type='button';b.textContent=t;b.onclick=()=>turn(t);d.querySelector('.chips').appendChild(b)});$('#log').appendChild(d)}
+$('#t').addEventListener('input',e=>{e.target.style.height='auto';e.target.style.height=Math.min(e.target.scrollHeight,160)+'px'});
+const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+let rec=null,listening=false,speaking=false,awaiting=false;
+function speak(t){if(!cfg.perm.voice||!window.speechSynthesis)return;speaking=true;try{rec&&rec.stop()}catch{}speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(t.replace(/[*`#]/g,'').slice(0,500));u.onend=u.onerror=()=>{speaking=false;if(listening)try{rec.start()}catch{}};speechSynthesis.speak(u)}
+function runVoice(cmd){awaiting=false;if(cmd){voiceTurn=true;turn(cmd)}}
+function setMic(){$('#mic').classList.toggle('on',listening);$('#mic').setAttribute('aria-pressed',listening);updStatus()}
+function startWake(){
+  if(!SR){bubble('Voice needs Chrome or Edge.','s');return}
+  if(!cfg.perm.voice){bubble('The microphone is switched off in Access > Permissions.','s');return}
+  rec=new SR();rec.continuous=true;rec.interimResults=false;rec.lang='en-IN';
+  rec.onresult=e=>{for(let i=e.resultIndex;i<e.results.length;i++){if(!e.results[i].isFinal)continue;const t=e.results[i][0].transcript.trim();
+    if(awaiting){runVoice(t);continue}
+    const m=t.match(/\b(?:hey|hi|ok|okay)[\s,]+dot\b[\s,.!?]*(.*)$/i);
+    if(m){if(m[1])runVoice(m[1]);else{awaiting=true;bubble('Listening...','s');setTimeout(()=>awaiting=false,8000)}}}};
+  rec.onend=()=>{if(listening&&!speaking&&!document.hidden)setTimeout(()=>{try{rec.start()}catch{}},300)};
+  rec.onerror=e=>{if(e.error==='not-allowed'||e.error==='service-not-allowed'){listening=false;setMic();bubble('Microphone blocked. Allow it in Access > Permissions.','s')}};
+  try{rec.start();listening=true;setMic()}catch{}
+}
+function stopWake(){listening=false;awaiting=false;try{rec&&rec.stop()}catch{}setMic()}
+$('#mic').onclick=()=>listening?stopWake():startWake();
+document.addEventListener('visibilitychange',()=>{if(!listening)return;if(document.hidden){try{rec.stop()}catch{}}else if(!speaking){try{rec.start()}catch{}}});
+
+const hostOf=u=>{try{return new URL(u).hostname}catch{return String(u)}};
+const ago=t=>{const m=Math.round((Date.now()-t)/60000);return m<1?'just now':m<60?m+' min ago':m<1440?Math.round(m/60)+' h ago':new Date(t).toLocaleDateString()};
+const tally=k=>{const o={};act.filter(a=>a.kind===k&&a.ok).forEach(a=>{const n=k==='apps'?a.target.split(' ')[0]:a.target;(o[n]=o[n]||{n:0,t:0}).n++;o[n].t=a.t});return Object.entries(o).sort((a,b)=>b[1].t-a[1].t)};
+const micState=async()=>{try{return (await navigator.permissions.query({name:'microphone'})).state}catch{return 'unknown'}};
+const list=(rows,empty)=>rows.length?rows.map(([h,v])=>`<div class="li"><span>${esc(h)}</span><small>${v.n}x, ${ago(v.t)}</small></div>`).join(''):`<p class="mut">${empty}</p>`;
+async function drawAccess(){
+  const mic=await micState();let conns=[];
+  if(cfg.cloud.token)try{const r=await fetch(cu('/connectors'),{headers:ch()});if(r.ok)conns=(await r.json()).connectors}catch{}
+  const sites=tally('web'),apps=tally('apps'),dev=act.filter(a=>a.kind==='device'&&a.ok).length,provs=cfg.order.filter(p=>cfg.keys[p]).length;
+  const tile=(n,l)=>`<div class="tile"><b>${n}</b><span>${l}</span></div>`;
+  const row=(k,t,sub)=>`<label class="perm"><span><b>${t}</b><small>${sub}</small></span><input type="checkbox" role="switch" data-p="${k}" ${cfg.perm[k]!==false?'checked':''}></label>`;
+  $('#pane-p').innerHTML=`<div class="tiles">${tile(provs,'AI providers')}${tile(conns.length,'Apps connected')}${tile(sites.length,'Sites accessed')}${tile(dev,'Device actions')}</div>`
+   +row('voice','Microphone and "Hey Dot"','Browser permission: '+esc(mic)+(mic!=='granted'?' <button class="ghost" id="allowmic" type="button">Allow</button>':''))
+   +row('web','Web browsing','Reads pages through your cloud worker'+(cfg.cloud.token?'':' (worker not connected)'))
+   +row('apps','Connected apps',conns.length?esc(conns.join(', ')):'None connected')
+   +row('device','Device access','Shell and files via the companion'+(cfg.bridge.token?'':' (not connected)'))
+   +row('bg','Background tasks','Scheduled work in the cloud')
+   +'<h3>Sites accessed</h3>'+list(sites,'No sites yet.')+'<h3>Apps used</h3>'+list(apps,'No apps used yet.');
+  $('#pane-p').querySelectorAll('[data-p]').forEach(i=>i.onchange=()=>{cfg.perm[i.dataset.p]=i.checked;save();if(i.dataset.p==='voice'&&!i.checked&&listening)stopWake()});
+  const am=$('#allowmic');if(am)am.onclick=()=>navigator.mediaDevices.getUserMedia({audio:true}).then(st=>st.getTracks().forEach(t=>t.stop())).catch(()=>{}).finally(drawAccess);
+}
+function drawHist(){
+  const rows=act.slice().reverse().slice(0,100);
+  $('#pane-h').innerHTML=`<div class="row" style="justify-content:space-between"><span class="mut">${act.length} entries</span><button class="ghost" id="clrh" type="button">Clear history</button></div>`+(rows.length?rows.map(a=>`<div class="li"><span><i class="k">${esc(a.kind)}</i>${esc(a.target)}${a.ok?'':' (failed)'}</span><small>${ago(a.t)}</small></div>`).join(''):'<p class="mut">Nothing yet.</p>');
+  const c=$('#clrh');if(c)c.onclick=()=>{act=[];LS.set('act',act);drawHist();drawAccess()};
+}
+$('#acc').onclick=()=>{drawAccess();$('#adlg').showModal()};$('#histbtn').onclick=()=>{drawHist();$('#hdlg').showModal()};$('#hclose').onclick=()=>$('#hdlg').close();$('#aclose').onclick=()=>$('#adlg').close();
+const face=(cx,cy)=>`<g class="eyes"><circle cx="${cx-8}" cy="${cy}" r="4.2" fill="#fff"/><circle cx="${cx+8}" cy="${cy}" r="4.2" fill="#fff"/><circle cx="${cx-7}" cy="${cy+.6}" r="2.1" fill="#1b1340"/><circle cx="${cx+9}" cy="${cy+.6}" r="2.1" fill="#1b1340"/></g><path d="M${cx-4} ${cy+9}q4 4 8 0" stroke="#1b1340" stroke-width="2" fill="none" stroke-linecap="round"/>`;
+const grad=(id,a,b)=>`<defs><linearGradient id="${id}" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="${a}"/><stop offset="1" stop-color="${b}"/></linearGradient></defs>`;
+const PAL=[
+`<svg viewBox="0 0 64 64">${grad('c1','#a99bff','#5b4bdb')}<path d="M32 5C32 5 12 27 12 41a20 20 0 0 0 40 0C52 27 32 5 32 5Z" fill="url(#c1)"/><ellipse cx="21" cy="31" rx="3" ry="6" fill="#fff" opacity=".35" transform="rotate(20 21 31)"/>${face(32,40)}</svg>`,
+`<svg viewBox="0 0 64 64">${grad('c2','#7ff0d8','#12a594')}<path d="M32 9 52 20v24L32 55 12 44V20Z" fill="url(#c2)" stroke="url(#c2)" stroke-width="6" stroke-linejoin="round"/><path d="M32 12 18 20" stroke="#fff" stroke-width="3" stroke-linecap="round" opacity=".4"/>${face(32,32)}</svg>`,
+`<svg viewBox="0 0 64 64">${grad('c3','#ffd166','#f28c28')}<path d="M32 5C34 20 44 30 57 32 44 34 34 44 32 59 30 44 20 34 7 32 20 30 30 20 32 5Z" fill="url(#c3)" stroke="url(#c3)" stroke-width="4" stroke-linejoin="round"/>${face(32,31)}</svg>`];
+const S=68,pal=document.createElement('div');
+pal.id='pal';pal.tabIndex=0;pal.setAttribute('role','button');pal.setAttribute('aria-label','Dot companion. Drag to move, tap to switch character.');document.body.appendChild(pal);
+function placePal(x,y){const m=cfg.mascot;m.x=Math.max(0,Math.min(innerWidth-S,x));m.y=Math.max(0,Math.min(innerHeight-S,y));pal.style.left=m.x+'px';pal.style.top=m.y+'px'}
+function drawPal(){pal.hidden=!cfg.mascot.on;pal.innerHTML=PAL[cfg.mascot.i%PAL.length]}
+const nextPal=()=>{cfg.mascot.i=(cfg.mascot.i+1)%PAL.length;drawPal();save()};
+let pd=null;
+pal.addEventListener('pointerdown',e=>{pd={sx:e.clientX,sy:e.clientY,ox:cfg.mascot.x,oy:cfg.mascot.y,moved:false};pal.classList.add('drag');try{pal.setPointerCapture(e.pointerId)}catch{}});
+pal.addEventListener('pointermove',e=>{if(!pd)return;const dx=e.clientX-pd.sx,dy=e.clientY-pd.sy;if(Math.abs(dx)+Math.abs(dy)>6)pd.moved=true;if(pd.moved)placePal(pd.ox+dx,pd.oy+dy)});
+pal.addEventListener('pointerup',()=>{if(!pd)return;pal.classList.remove('drag');if(pd.moved)save();else nextPal();pd=null});
+pal.addEventListener('pointercancel',()=>{pd=null;pal.classList.remove('drag')});
+pal.addEventListener('keydown',e=>{const k={ArrowLeft:[-24,0],ArrowRight:[24,0],ArrowUp:[0,-24],ArrowDown:[0,24]}[e.key];if(k){e.preventDefault();placePal(cfg.mascot.x+k[0],cfg.mascot.y+k[1]);save()}else if(e.key==='Enter'||e.key===' '){e.preventDefault();nextPal()}});
+addEventListener('resize',()=>placePal(cfg.mascot.x,cfg.mascot.y));
+const palObs=new MutationObserver(()=>{pal.classList.toggle('busy',$('#dot').classList.contains('busy'));pal.classList.toggle('listen',$('#mic').classList.contains('on'))});
+[$('#dot'),$('#mic')].forEach(n=>palObs.observe(n,{attributes:true,attributeFilter:['class']}));
+drawPal();placePal(cfg.mascot.x??innerWidth-84,cfg.mascot.y??innerHeight-200);
+let connNames=[],att=[];
+const CONN=[
+ {id:'youtube',name:'YouTube',d:'Search videos and channels (public data)',f:[['key','YouTube Data API key']],build:v=>({url:'https://www.googleapis.com/youtube/v3',query:{key:v.key}})},
+ {id:'whatsapp',name:'WhatsApp Business',d:'Messages through Meta WhatsApp Cloud API (needs a Meta business account)',f:[['phone','Phone number ID'],['token','Access token']],build:v=>({url:'https://graph.facebook.com/v20.0/'+v.phone,headers:{authorization:'Bearer '+v.token}})},
+ {id:'github',name:'GitHub',d:'Repos, issues and pull requests',f:[['token','Personal access token']],build:v=>({url:'https://api.github.com',headers:{authorization:'Bearer '+v.token,'user-agent':'dot'}})},
+ {id:'notion',name:'Notion',d:'Pages and databases',f:[['token','Integration token']],build:v=>({url:'https://api.notion.com/v1',headers:{authorization:'Bearer '+v.token,'notion-version':'2022-06-28'}})},
+ {id:'telegram',name:'Telegram bot',d:'Send and read messages with your own bot',f:[['token','Bot token']],build:v=>({url:'https://api.telegram.org/bot'+v.token})},
+ {id:'webhook',name:'Zapier, Make or n8n',d:'One webhook can reach Gmail, Google Sheets, Calendar, Slack and thousands more apps',f:[['name','Short name, e.g. gmail'],['url','Webhook URL']],build:v=>({url:v.url}),nm:v=>v.name},
+ {id:'custom',name:'Custom API',d:'Any web API that uses a key',f:[['name','Short name'],['url','Base URL'],['hname','Header name, e.g. authorization'],['hval','Header value']],build:v=>({url:v.url,headers:v.hname?{[v.hname]:v.hval}:{}}),nm:v=>v.name,opt:['hname','hval']}];
+async function loadConns(){if(!cfg.cloud.token){connNames=[];return}try{const r=await fetch(cu('/connectors'),{headers:ch()});if(r.ok)connNames=(await r.json()).connectors}catch{}}
+async function cpost(p,body){const r=await fetch(cu(p),{method:'POST',headers:ch(),body:JSON.stringify(body)});const j=await r.json();if(!r.ok)throw new Error(j.error||r.status);return j}
+function drawConns(){
+  $('#ctitle').textContent='Connectors';const b=$('#cbody');
+  if(!cfg.cloud.token){b.innerHTML='<p class="mut">Connectors are stored in your cloud worker. Add the Worker URL and token in Settings first.</p>';return}
+  const other=connNames.filter(n=>!CONN.some(c=>c.id===n));
+  b.innerHTML='<p class="mut">Connect an app once and Dot can use it by name. Anything that changes data asks for your approval.</p>'
+   +CONN.map(c=>{const on=connNames.includes(c.id);return `<div class="cc"><span><b>${esc(c.name)}</b>${on?' <span class="pill"><i></i>connected</span>':''}<small>${esc(c.d)}</small></span><span class="row"><button class="ghost" type="button" data-c="${c.id}">${on?'Edit':'Connect'}</button>${on?`<button class="ghost" type="button" data-rm="${c.id}">Remove</button>`:''}</span></div>`}).join('')
+   +(other.length?'<h3>Other connected</h3>'+other.map(n=>`<div class="cc"><span>${esc(n)}</span><button class="ghost" type="button" data-rm="${esc(n)}">Remove</button></div>`).join(''):'');
+}
+function connForm(c){
+  $('#ctitle').textContent='Connect '+c.name;
+  $('#cbody').innerHTML=`<p class="mut">${esc(c.d)}. Saved in your Cloudflare worker, not in this app.</p>`+c.f.map(([k,l])=>`<label>${esc(l)}</label><input type="${/^(token|key|hval)$/.test(k)?'password':'text'}" data-k="${k}" autocomplete="off">`).join('')+'<div class="row" style="margin-top:14px"><button class="ghost" id="csave" type="button" data-id="'+c.id+'">Save</button><button class="ghost" id="cback" type="button">Back</button></div><p class="mut" id="cmsg"></p>';
+}
+$('#cbody').addEventListener('click',async e=>{
+  const b=e.target.closest('button');if(!b)return;
+  if(b.dataset.c)return connForm(CONN.find(c=>c.id===b.dataset.c));
+  if(b.id==='cback')return drawConns();
+  try{
+    if(b.dataset.rm){await cpost('/connector/delete',{name:b.dataset.rm});await loadConns();return drawConns()}
+    if(b.id==='csave'){const c=CONN.find(x=>x.id===b.dataset.id),v={};let bad=false;$('#cbody').querySelectorAll('[data-k]').forEach(i=>{v[i.dataset.k]=i.value.trim();if(!v[i.dataset.k]&&!(c.opt||[]).includes(i.dataset.k))bad=true});
+      if(bad){$('#cmsg').textContent='Please fill in every field.';return}
+      const name=(c.nm?c.nm(v):c.id).toLowerCase().replace(/[^a-z0-9-]/g,'');
+      await cpost('/connector',{name,config:c.build(v)});logAct('apps','connected '+name);await loadConns();drawConns()}
+  }catch(err){const m=$('#cmsg');if(m)m.textContent='Failed: '+err.message;else bubble('Connector error: '+err.message,'s')}
+});
+const menu=$('#menu'),plus=$('#plus');
+const closeMenu=()=>{menu.hidden=true;plus.setAttribute('aria-expanded','false')};
+plus.onclick=e=>{e.stopPropagation();const open=menu.hidden;menu.hidden=!open;plus.setAttribute('aria-expanded',String(open))};
+document.addEventListener('click',e=>{if(!menu.contains(e.target))closeMenu()});
+document.addEventListener('keydown',e=>{if(e.key==='Escape')closeMenu()});
+$('#m-file').onclick=()=>{closeMenu();$('#file').click()};
+$('#m-conn').onclick=()=>{closeMenu();drawConns();loadConns().then(drawConns);$('#cdlg').showModal()};
+$('#cclose').onclick=()=>$('#cdlg').close();
+const readText=f=>new Promise(res=>{const r=new FileReader();r.onload=()=>res(String(r.result));r.onerror=()=>res('');r.readAsText(f)});
+function drawAtt(){$('#chips').innerHTML='';att.forEach((a,i)=>{const sp=document.createElement('span');sp.className='attf';sp.textContent=a.name;const x=document.createElement('button');x.type='button';x.textContent='\u00d7';x.setAttribute('aria-label','Remove '+a.name);x.onclick=()=>{att.splice(i,1);drawAtt()};sp.appendChild(x);$('#chips').appendChild(sp)})}
+$('#file').onchange=async e=>{
+  for(const f of e.target.files){
+    if(f.size>2e6){bubble(f.name+' is too big (max 2 MB).','s');continue}
+    const t=/^(image|audio|video)\//.test(f.type)||f.type==='application/pdf'?'':await readText(f);
+    if(!t||t.includes('\u0000')){bubble(f.name+': only text files (txt, md, csv, json, code) work for now.','s');continue}
+    att.push({name:f.name,text:t.length>30000?t.slice(0,30000)+'\n...[truncated]':t});logAct('file',f.name)}
+  e.target.value='';drawAtt()};
+const CLOUD=['web','api','schedule','tasks','unschedule'];
+const cu=p=>cfg.cloud.url.replace(/\/$/,'')+p, ch=()=>({'content-type':'application/json',authorization:'Bearer '+cfg.cloud.token});
+async function cloud(name,args){const r=await fetch(cu('/tool'),{method:'POST',headers:ch(),body:JSON.stringify({name,args})});const j=await r.json();if(!r.ok)throw new Error(j.error||r.status);return j.result}
+async function pull(){if(!cfg.cloud.token)return;try{const r=await fetch(cu('/results'),{headers:ch()});if(!r.ok)return;const j=await r.json();j.results.forEach(x=>{bubble('Background task: '+x.text,'a');hist.push({role:'assistant',content:'[Background task result] '+x.text})});if(j.results.length)save()}catch{}}
+async function syncMem(){if(!cfg.cloud.token)return;try{await fetch(cu('/memory'),{method:'POST',headers:ch(),body:JSON.stringify(mem.map(m=>m.text))})}catch{}}
+setInterval(pull,60000);document.addEventListener('visibilitychange',()=>{if(!document.hidden)pull()});
+$('#f').addEventListener('submit',e=>{e.preventDefault();const t=$('#t').value.trim();if(!t&&!att.length)return;const full=(t||'Please look at the attached file.')+att.map(a=>'\n\n[Attached file: '+a.name+']\n'+a.text).join('');const shown=(t?t:'')+att.map(a=>(t?'\n':'')+'[file: '+a.name+']').join('');$('#t').value='';$('#t').style.height='auto';att=[];drawAtt();turn(full,shown)});
+$('#t').addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.shiftKey&&matchMedia('(hover:hover)').matches){e.preventDefault();$('#f').requestSubmit()}});
+
+function drawFacts(){$('#facts').innerHTML='';mem.forEach((m,i)=>{const d=document.createElement('div');const s=document.createElement('span');s.textContent=m.text;const b=document.createElement('button');b.className='ghost';b.type='button';b.textContent='Remove';b.onclick=()=>{mem.splice(i,1);save();drawFacts()};d.append(s,b);$('#facts').appendChild(d)});if(!mem.length)$('#facts').textContent='Nothing remembered yet.'}
+function openSettings(){for(const p of['gemini','groq','claude']){$('#k-'+p).value=cfg.keys[p]||'';$('#m-'+p).value=cfg.models[p]}$('#order').value=cfg.order.join(',');$('#b-url').value=cfg.bridge.url;$('#b-token').value=cfg.bridge.token;$('#c-url').value=cfg.cloud.url;$('#c-token').value=cfg.cloud.token;$('#pal-on').checked=cfg.mascot.on;drawFacts();$('#dlg').showModal()}
+$('#open').onclick=openSettings;$('#close').onclick=()=>$('#dlg').close();
+$('#save').onclick=()=>{for(const p of['gemini','groq','claude']){cfg.keys[p]=$('#k-'+p).value.trim();cfg.models[p]=$('#m-'+p).value.trim()||cfg.models[p]}cfg.order=$('#order').value.split(',').map(s=>s.trim()).filter(s=>['gemini','groq','claude'].includes(s));cfg.bridge={url:$('#b-url').value.trim(),token:$('#b-token').value.trim()};cfg.cloud={url:$('#c-url').value.trim(),token:$('#c-token').value.trim()};cfg.mascot.on=$('#pal-on').checked;drawPal();save();updStatus();$('#dlg').close()};
+$('#addfact').onclick=()=>{const v=$('#newfact').value.trim();if(v){mem.push({t:Date.now(),text:v});$('#newfact').value='';save();drawFacts()}};
+$('#export').onclick=()=>{const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([JSON.stringify({mem,summary},null,2)],{type:'application/json'}));a.download='dot-memory.json';a.click()};
+$('#clear').onclick=()=>{hist=[];summary='';save();renderAll();$('#dlg').close()};
+
+let deferredInstall=null;
+window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();deferredInstall=e;$('#install').hidden=false});
+$('#install').onclick=async()=>{if(!deferredInstall)return;deferredInstall.prompt();await deferredInstall.userChoice;deferredInstall=null;$('#install').hidden=true};
+window.addEventListener('appinstalled',()=>{$('#install').hidden=true;deferredInstall=null});
+if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js').catch(()=>{});
+renderAll();
+pull();loadConns();
+</script>
+</body>
+</html>
